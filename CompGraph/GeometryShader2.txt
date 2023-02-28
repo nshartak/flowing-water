@@ -1,0 +1,45 @@
+#version 330 core
+layout (triangles) in;
+layout (triangle_strip, max_vertices=6) out;
+in vec2 TexC[];
+out vec2 TexCoord;
+
+uniform sampler2D distribution;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+void generateGrassObj (vec4 position , float size )
+{
+     gl_Position = projection*view*model*position; 
+    TexCoord=vec2(0,0);
+    EmitVertex();
+      gl_Position = projection*view*model*(position+vec4(0, 0, size, 0)); 
+    TexCoord=vec2(0,1);
+    EmitVertex();
+     gl_Position = projection*view*model*(position+vec4(0, size, 0, 0)); 
+    TexCoord=vec2(1,0);
+    EmitVertex();
+     EndPrimitive();
+    
+    gl_Position = projection*view*model*(position+vec4(0, 0, size, 0)); 
+    TexCoord=vec2(0,1);
+    EmitVertex();
+     gl_Position = projection*view*model*(position+vec4(0, size, 0, 0)); 
+    TexCoord=vec2(1,0);
+    EmitVertex();
+    gl_Position = projection*view*model*(position+vec4(0, size, size ,0)); 
+    TexCoord=vec2(1,1);
+    EmitVertex();
+    EndPrimitive();
+}
+void main() 
+{    
+vec2 centre=(TexC[0]+TexC[1]+TexC[2])/3;
+//vec2 centre=vec2((gl_in[0].gl_Position.x+gl_in[1].gl_Position.x+gl_in[2].gl_Position.x)/3, (gl_in[0].gl_Position.y+gl_in[1].gl_Position.y+gl_in[2].gl_Position.y)/3);
+if(texture(distribution, centre).r>0.9f)
+{
+    generateGrassObj(gl_in[0].gl_Position, 0.9);
+}
+     
+} 
+

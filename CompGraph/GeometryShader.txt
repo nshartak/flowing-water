@@ -1,0 +1,45 @@
+#version 330 core
+layout (triangles) in;
+layout (triangle_strip, max_vertices=3) out;
+in vec2 TexC[];
+out vec2 TexCoord;
+out vec3 normal;
+uniform float shift;
+uniform float offset;
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+uniform vec3 center;
+
+float ripple(float x, float y)
+{
+    float time=24*(shift-offset);
+    float a=x-center.x;
+    float b=y-center.y;
+    float t=20*sqrt(a*a+b*b);
+    float ripple=sin(t-time)/(12*(t-time));//80
+    return ripple;
+}
+void main() 
+{    
+    for(int i=0; i<3; ++i)
+    {
+    float x=gl_in[i].gl_Position.x;
+    float y=gl_in[i].gl_Position.y;
+    float z=gl_in[i].gl_Position.z;
+    
+    z=z+ripple(x,y);
+    gl_Position = projection*view*model*vec4(x,y,z,1); 
+    TexCoord=vec2(TexC[i].x, TexC[i].y);
+
+    vec3 a=vec3(gl_in[0].gl_Position);
+    vec3 b=vec3(gl_in[1].gl_Position);
+    vec3 c=vec3(gl_in[2].gl_Position);
+    normal=normalize(cross(b-a, c-a));
+    EmitVertex();
+    }
+    EndPrimitive();
+
+ 
+} 
+
